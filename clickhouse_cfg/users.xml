@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yandex>
+    <!-- Profiles of settings. -->
+    <profiles>
+        <default>
+            <!-- Default settings. -->
+        </default>
+    </profiles>
+
+    <!-- Users and their settings. Password is not mandatory. If not set, then user will have no password. -->
+    <users>
+        <!-- Default user. If no user specified, 'default' will be used. -->
+        <myuser>
+            <password>mypassword</password>
+            <networks>
+                <ip>::/0</ip>
+            </networks>
+            <profile>default</profile>
+            <quota>default</quota>
+        </myuser>
+    </users>
+
+    <!-- Quotas. -->
+    <quotas>
+        <default>
+            <interval>
+                <duration>3600</duration>
+                <queries>0</queries>
+                <errors>0</errors>
+                <result_rows>0</result_rows>
+                <read_rows>0</read_rows>
+                <execution_time>0</execution_time>
+            </interval>
+        </default>
+    </quotas>
+</yandex>
