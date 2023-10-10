@@ -39,10 +39,10 @@ class Collector:
                 or filename.startswith(self.config.failed_label))
 
     def _filter_event(self, event):
-        if event.get('EventID') not in self.config.allowed_event_ids:
+        if event.get('EventID') not in self.config.allowed_events.keys():
             return None
 
-        return {field: event[field] for field in self.config.allowed_fields[event['EventID']] if field in event}
+        return {field: event[field] for field in self.config.allowed_events[event['EventID']] if field in event}
 
     def _parse_json_file(self, file_path):
         parsed_data = []
@@ -56,3 +56,5 @@ class Collector:
                 except json.JSONDecodeError:
                     return None
         return parsed_data
+
+

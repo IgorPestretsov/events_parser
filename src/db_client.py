@@ -1,5 +1,5 @@
-from logging import Logger
 from datetime import datetime
+from logging import Logger
 
 from clickhouse_driver import Client
 
@@ -30,18 +30,24 @@ class DBClient:
             self.client.execute(query)
 
     def write_parsed_data(self, data):
+        grouped_data = {}
         for event in data:
-            event['TimeCreated'] = datetime.strptime(event['TimeCreated'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            event_id = int(event.get('EventID'))
+            if 'UtcTime' in event:
+                event['UtcTime'] = datetime.strptime(event['UtcTime'], '%Y-%m-%d %H:%M:%S.%f')
 
-        query = (f'INSERT INTO {self.config.database}.sysmon1 '
-                 '(EventID, '
-                 'ParentProcessGuid, '
-                 'Hashes, '
-                 'TimeCreated, '
-                 'User, '
-                 'CommandLine, '
-                 'OriginalFileName, '
-                 'ProcessGuid, '
-                 'CurrentDirectory'
-                 ') VALUES')
-        self.client.execute(query, data)
+            if event_id not in grouped_data:
+                grouped_data[event_id] = []
+
+            grouped_data[event_id].append(event)
+
+        for event_id, events in grouped_data.items():
+            keys = events[0].keys()
+            columns = ', '.join(keys)
+
+            query = (f'INSERT INTO {self.config.database}.sysmon{event_id} '
+                     f'({columns}) VALUES')
+            self.logger.debug(query)
+
+            values = [tuple(event[key] for key in keys) for event in events]
+            self.client.execute(query, values)

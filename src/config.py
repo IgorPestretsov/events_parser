@@ -15,18 +15,49 @@ class CollectorConfig(BaseSettings):
     input_dir: str = 'input_dir'
     success_label: str = 'SUCCESS_'
     failed_label: str = 'FAILED_'
-    allowed_event_ids: list = [1]
-    allowed_fields: dict = {
+    allowed_events: dict = {
         1: [
             'EventID',
             'ParentProcessGuid',
             "Hashes",
-            "TimeCreated",
+            "UtcTime",
             "User",
             "CommandLine",
             "OriginalFileName",
             "ProcessGuid",
             "CurrentDirectory",
+        ],
+        # TODO add hostname to sysmon1
+        3: [
+            'EventID',
+            'UtcTime',
+            'ProcessGuid',
+            'host',
+            'User',
+            'Protocol',
+            'SourcePort',
+            'DestinationPort',
+            'SourceIp',
+            'DestinationIp',
+            'Initiated',
+        ],
+        12: [
+            'EventID',
+            'UtcTime',
+            'ProcessGuid',
+            'EventType',
+            'Image',
+            'Hostname',
+            'TargetObject',
+        ],
+        13: [
+            'EventID',
+            'UtcTime',
+            'ProcessGuid',
+            'EventType',
+            'Image',
+            'Hostname',
+            'TargetObject',
         ]
     }
 
@@ -44,15 +75,49 @@ class DatabaseConfig(BaseSettings):
     CREATE_DATABASE_QUERY: str = "CREATE DATABASE IF NOT EXISTS {dbname};"
     CREATE_TABLES_QUERIES: list = [
         "CREATE TABLE IF NOT EXISTS {dbname}.sysmon1("
-        "EventID Int8,"
+        "EventID Int32,"
         "ParentProcessGuid String,"
         "Hashes String,"
-        "TimeCreated DateTime,"
+        "UtcTime DateTime,"
         "User String,"
         "CommandLine String,"
         "OriginalFileName String,"
         "ProcessGuid String,"
         "CurrentDirectory String"
+        ") ENGINE = MergeTree() ORDER BY ProcessGuid;",
+
+        "CREATE TABLE IF NOT EXISTS {dbname}.sysmon12("
+        "EventID Int32,"
+        "UtcTime DateTime,"
+        "ProcessGuid String,"
+        "EventType String,"
+        "Image String,"
+        "Hostname String,"
+        "TargetObject String"
+        ") ENGINE = MergeTree() ORDER BY ProcessGuid;",
+
+        "CREATE TABLE IF NOT EXISTS {dbname}.sysmon13("
+        "EventID Int32,"
+        "UtcTime DateTime,"
+        "ProcessGuid String,"
+        "EventType String,"
+        "Image String,"
+        "Hostname String,"
+        "TargetObject String"
+        ") ENGINE = MergeTree() ORDER BY ProcessGuid;",
+
+        "CREATE TABLE IF NOT EXISTS {dbname}.sysmon3("
+        "EventID Int32,"
+        "UtcTime DateTime,"
+        "ProcessGuid String,"
+        "host String,"
+        "User String,"
+        "Protocol String,"
+        "SourcePort String,"
+        "DestinationPort String,"
+        "SourceIp String,"
+        "DestinationIp String,"
+        "Initiated String"
         ") ENGINE = MergeTree() ORDER BY ProcessGuid;",
     ]
 
