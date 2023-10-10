@@ -18,7 +18,7 @@ To change the password, you need to modify the credentials in both `clickhouse_c
 - Place the Sysmon event logs (in JSON format) in the `input_dir`.
 - Start the services using Docker Compose:
   ```bash
-  docker-compose up --build
+  docker-compose up -d --build
   ```
 - For testing purposes, you can rename the files in the `input_dir` by removing the trailing underscore (if present).
 
