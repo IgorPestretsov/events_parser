@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  parser:
+    image: events_parser
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/usr/src/app/logs
+      - ./input_dir:/usr/src/app/input_dir
+    depends_on:
+      - clickhouse
+  clickhouse:
+    image: yandex/clickhouse-server:latest
+    restart: always
+    ports:
+      - 8123:8123
+      - 9000:9000
+    volumes:
+      - ./clickhouse_data:/var/lib/clickhouse
+      - ./clickhouse_cfg/users.xml:/etc/clickhouse-server/users.xml
