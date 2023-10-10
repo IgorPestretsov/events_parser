@@ -1,24 +1,26 @@
 from pathlib import Path
 
-from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 
 class AppConfig(BaseSettings):
+    """Configuraion for application."""
+
     timeout: int = 30
 
     class Config:
-        env_prefix = 'APP_'
+        env_prefix = "APP_"
 
 
 class CollectorConfig(BaseSettings):
-    input_dir: str = 'input_dir'
-    success_label: str = 'SUCCESS_'
-    failed_label: str = 'FAILED_'
+    """Configuration for collector class."""
+
+    input_dir: str = "input_dir"
+    processed_label: str = "PROCESSED_"
     allowed_events: dict = {
         1: [
-            'EventID',
-            'ParentProcessGuid',
+            "EventID",
+            "ParentProcessGuid",
             "Hashes",
             "UtcTime",
             "User",
@@ -26,43 +28,47 @@ class CollectorConfig(BaseSettings):
             "OriginalFileName",
             "ProcessGuid",
             "CurrentDirectory",
+            "Hostname",
+            "AccountName",
         ],
         # TODO add hostname to sysmon1
         3: [
-            'EventID',
-            'UtcTime',
-            'ProcessGuid',
-            'host',
-            'User',
-            'Protocol',
-            'SourcePort',
-            'DestinationPort',
-            'SourceIp',
-            'DestinationIp',
-            'Initiated',
+            "EventID",
+            "UtcTime",
+            "ProcessGuid",
+            "host",
+            "User",
+            "Protocol",
+            "SourcePort",
+            "DestinationPort",
+            "SourceIp",
+            "DestinationIp",
+            "Initiated",
         ],
         12: [
-            'EventID',
-            'UtcTime',
-            'ProcessGuid',
-            'EventType',
-            'Image',
-            'Hostname',
-            'TargetObject',
+            "EventID",
+            "UtcTime",
+            "ProcessGuid",
+            "EventType",
+            "Image",
+            "Hostname",
+            "TargetObject",
         ],
         13: [
-            'EventID',
-            'UtcTime',
-            'ProcessGuid',
-            'EventType',
-            'Image',
-            'Hostname',
-            'TargetObject',
-        ]
+            "EventID",
+            "UtcTime",
+            "ProcessGuid",
+            "EventType",
+            "Image",
+            "Hostname",
+            "TargetObject",
+        ],
     }
 
 
 class DatabaseConfig(BaseSettings):
+    """Configuration for database client."""
+
     host: str
     port: int
     user: str
@@ -70,7 +76,7 @@ class DatabaseConfig(BaseSettings):
     database: str
 
     class Config:
-        env_prefix = 'DB_'
+        env_prefix = "DB_"
 
     CREATE_DATABASE_QUERY: str = "CREATE DATABASE IF NOT EXISTS {dbname};"
     CREATE_TABLES_QUERIES: list = [
@@ -83,7 +89,9 @@ class DatabaseConfig(BaseSettings):
         "CommandLine String,"
         "OriginalFileName String,"
         "ProcessGuid String,"
-        "CurrentDirectory String"
+        "CurrentDirectory String,"
+        "Hostname String,"
+        "AccountName String"
         ") ENGINE = MergeTree() ORDER BY ProcessGuid;",
 
         "CREATE TABLE IF NOT EXISTS {dbname}.sysmon12("
@@ -121,26 +129,18 @@ class DatabaseConfig(BaseSettings):
         ") ENGINE = MergeTree() ORDER BY ProcessGuid;",
     ]
 
-    @field_validator('port')
-    def validate_port(cls, port):
-        if port <= 0 or port > 65535:
-            raise ValueError('Invalid port number')
-        return port
-
 
 class LogConfig(BaseSettings):
     """Logging configuration to be set for the server."""
 
     name: str = "events_parser"
-    format: str = (
-        "[%(asctime)s] %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
-    )
+    format: str = "[%(asctime)s] %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
     level: str = "INFO"
     path: Path = Path(f"logs/{name}.log")
     version: int = 1
 
     @property
-    def log_config_dict(self):
+    def log_config_dict(self) -> None:
         return {
             "version": 1,
             "disable_existing_loggers": False,
@@ -173,5 +173,5 @@ class LogConfig(BaseSettings):
         }
 
     class Config:
-        env_prefix = 'LOG_'
+        env_prefix = "LOG_"
         case_sensitive = False

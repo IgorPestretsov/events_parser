@@ -13,9 +13,10 @@ db_client = DBClient(logger)
 collector = Collector(logger)
 
 
-def main():
+def main() -> None:
+    """Continuously collects and processes events with pauses between runs."""
     while True:
-        collector()
+        collector.run()
         sleep(cfg.timeout)
 
 
