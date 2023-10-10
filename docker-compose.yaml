@@ -6,8 +6,6 @@ services:
     restart: always
     env_file:
       - .env
-    ports:
-      - 8002:8002
     volumes:
       - ./logs:/usr/src/app/logs
       - ./input_dir:/usr/src/app/input_dir
